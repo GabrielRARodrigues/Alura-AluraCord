@@ -1,36 +1,10 @@
-import { Box, Button, Image, Text, TextField } from '@skynexui/components'
-import appConfig from '../config.json'
+import { useState } from 'react'
 
-function GlobalStyle() {
-  return (
-    <style global jsx>{`
-      * {
-        margin: 0;
-        padding: 0;
-        box-sizing: border-box;
-        list-style: none;
-      }
-      body {
-        font-family: 'Open Sans', sans-serif;
-      }
-      /* App fit Height */
-      html,
-      body,
-      #__next {
-        min-height: 100vh;
-        display: flex;
-        flex: 1;
-      }
-      #__next {
-        flex: 1;
-      }
-      #__next > * {
-        flex: 1;
-      }
-      /* ./App fit Height */
-    `}</style>
-  )
-}
+import { useRouter } from 'next/router'
+
+import { Box, Button, Image, Text, TextField } from '@skynexui/components'
+
+import appConfig from '../config.json'
 
 function Title(props) {
   const Tag = props.tag || 'h1'
@@ -52,27 +26,12 @@ function Title(props) {
   )
 }
 
-//       <GlobalStyle />
-//       <Title tag="h2">Boas vindas de volta!</Title>
-//       <h2>Discord - Alura Matrix</h2>
-
-//       <style jsx>{`
-//         h1 {
-//           color: red;
-//         }
-//       `}</style>
-//     </div>
-//   )
-// }
-
-// export default HomePage
-
 export default function HomePage() {
-  const username = 'GabrielRARodrigues'
+  const [username, setUsername] = useState('GabrielRARodrigues')
+  const router = useRouter()
 
   return (
     <>
-      <GlobalStyle />
       <Box
         styleSheet={{
           display: 'flex',
@@ -106,7 +65,12 @@ export default function HomePage() {
         >
           {/* Formulário */}
           <Box
-            tag="form"
+            as="form"
+            onSubmit={event => {
+              event.preventDefault()
+
+              router.push('/chat')
+            }}
             styleSheet={{
               display: 'flex',
               flexDirection: 'column',
@@ -129,6 +93,13 @@ export default function HomePage() {
             </Text>
 
             <TextField
+              type="text"
+              value={username}
+              onChange={event => {
+                const value = event.target.value
+
+                setUsername(value)
+              }}
               fullWidth
               textFieldColors={{
                 neutral: {
