@@ -1,21 +1,50 @@
-import { useState } from 'react'
+import { useEffect, useState } from 'react'
 
 import { Box, Text, TextField, Image, Button } from '@skynexui/components'
 
 import appConfig from '../config.json'
 
+const api = '/api/messages'
+
+async function getAllMessages() {
+  const data = await fetch(api)
+
+  const messages = await data.json()
+
+  return messages
+}
+
+async function createMessage(message) {
+  await fetch(api, {
+    method: 'POST',
+    headers: {
+      'Content-Type': 'application/json'
+    },
+    body: JSON.stringify({ message })
+  })
+}
+
 export default function ChatPage() {
   const [message, setMessage] = useState('')
   const [messageList, setMessageList] = useState([])
 
-  function handleSendNewMessage(newMessage) {
+  useEffect(() => {
+    getAllMessages().then(messages => {
+      setMessageList(messages)
+    })
+  }, [])
+
+  async function handleSendNewMessage(newMessage) {
     const message = {
-      id: messageList.length + 1,
       from: 'GabrielRARodrigues',
       text: newMessage
     }
 
-    setMessageList(prevState => [message, ...prevState])
+    await createMessage(message)
+
+    const messages = await getAllMessages()
+
+    setMessageList([...messages])
     setMessage('')
   }
 
@@ -166,7 +195,7 @@ function MessageList(props) {
                 display: 'inline-block',
                 marginRight: '8px'
               }}
-              src={`https://github.com/GabrielRARodrigues.png`}
+              src={`https://github.com/${message.from}.png`}
             />
             <Text tag="strong">{message.from}</Text>
             <Text
